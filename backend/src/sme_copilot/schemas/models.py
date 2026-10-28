@@ -21,6 +21,29 @@ class ProblemType(StrEnum):
     INFLATED_REVENUE = "inflated_revenue"
 
 
+class DocumentType(StrEnum):
+    BANK_STATEMENT = "bank_statement"
+    EWALLET_EXPORT = "ewallet_export"
+    PLATFORM_SALES = "platform_sales"
+    RECEIPT = "receipt"
+
+
+class ProcessingStatus(StrEnum):
+    PENDING = "pending"
+    PROCESSING = "processing"
+    AWAITING_REVIEW = "awaiting_review"
+    APPROVED = "approved"
+    DENIED = "denied"
+    COUNTERED = "countered"
+    FAILED = "failed"
+
+
+class ValidationCheck(StrEnum):
+    RUNNING_BALANCE = "running_balance"
+    LINE_ITEM_SUM = "line_item_sum"
+    DATE_CONTINUITY = "date_continuity"
+
+
 class FileRef(BaseModel):
     filename: str
     content_type: str
@@ -35,6 +58,33 @@ class SourcePointer(BaseModel):
     text_snippet: str = ""
 
 
+class TransactionLine(BaseModel):
+    date: str
+    description: str = ""
+    amount: float
+    balance: float | None = None
+    source_pointer: SourcePointer | None = None
+
+
+class ExtractedDocument(BaseModel):
+    application_id: str
+    file_ref: FileRef
+    document_type: DocumentType
+    transactions: list[TransactionLine] = Field(default_factory=list)
+    summary_fields: dict[str, object] = Field(default_factory=dict)
+    confidence: float = Field(default=1.0, ge=0.0, le=1.0)
+    source_pointers: list[SourcePointer] = Field(default_factory=list)
+    extraction_status: str = "success"
+
+
+class EvidenceBundle(BaseModel):
+    application_id: str
+    documents: list[ExtractedDocument] = Field(default_factory=list)
+    validation_results: list["ValidationResult"] = Field(default_factory=list)
+    confidence: float = Field(default=1.0, ge=0.0, le=1.0)
+    fraud_flags: list[str] = Field(default_factory=list)
+
+
 class Application(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid4()))
     merchant_name: str = Field(min_length=1)
@@ -43,6 +93,9 @@ class Application(BaseModel):
     idempotency_key: str | None = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
     status: ApplicationStatus = ApplicationStatus.PENDING
+    processing_status: ProcessingStatus = ProcessingStatus.PENDING
+    validation_results: list["ValidationResult"] = Field(default_factory=list)
+    extracted_documents: list["ExtractedDocument"] = Field(default_factory=list)
 
 
 class ExtractionResult(BaseModel):
