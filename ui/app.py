@@ -53,7 +53,7 @@ if submitted:
     else:
         form_data = {"merchant_name": merchant_name, "loan_amount": str(loan_amount)}
         files = []
-        for uf in (uploaded_files or []):
+        for uf in uploaded_files or []:
             files.append(("files", (uf.name, uf.read(), uf.type or "application/octet-stream")))
         try:
             resp = httpx.post(

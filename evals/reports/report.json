@@ -1,0 +1,120 @@
+{
+  "timestamp": "2026-10-28T13:13:19Z",
+  "merchants_evaluated": 10,
+  "seed": 42,
+  "metrics": {
+    "field_extraction_accuracy_pct": 100.0,
+    "discrepancy_catch_rate_pct": 100.0,
+    "false_positive_rate_pct": 0.0,
+    "average_latency_seconds": 0.009,
+    "total_runtime_seconds": 0.11
+  },
+  "details": [
+    {
+      "merchant_id": "533e1c5a-6a65-4d30-a422-3dcfc3c35b7b",
+      "name": "Merchant-001",
+      "latency_seconds": 0.016,
+      "confidence": 0.95,
+      "extracted_transactions": 9,
+      "expected_transactions": 9,
+      "validation_passed": true,
+      "fraud_flags": []
+    },
+    {
+      "merchant_id": "dd18641d-357c-4c82-98c9-9717f5fcbe97",
+      "name": "Merchant-002",
+      "latency_seconds": 0.007,
+      "confidence": 0.95,
+      "extracted_transactions": 8,
+      "expected_transactions": 8,
+      "validation_passed": true,
+      "fraud_flags": []
+    },
+    {
+      "merchant_id": "89d842fb-84b4-4029-9a52-e58b4de3c78b",
+      "name": "Merchant-003",
+      "latency_seconds": 0.009,
+      "confidence": 0.95,
+      "extracted_transactions": 14,
+      "expected_transactions": 14,
+      "validation_passed": true,
+      "fraud_flags": []
+    },
+    {
+      "merchant_id": "d57bcd00-cd0c-49a3-82cd-af98652e6dad",
+      "name": "Merchant-004",
+      "latency_seconds": 0.007,
+      "confidence": 0.6,
+      "extracted_transactions": 12,
+      "expected_transactions": 12,
+      "validation_passed": false,
+      "fraud_flags": [
+        "Running balance mismatch in bank_statement.csv: Mismatch at row 4: expected 27800.11, got 27300.11"
+      ]
+    },
+    {
+      "merchant_id": "25ad5c3f-a0ad-4ee9-903a-1a2fd5ae2542",
+      "name": "Merchant-005",
+      "latency_seconds": 0.007,
+      "confidence": 0.95,
+      "extracted_transactions": 9,
+      "expected_transactions": 9,
+      "validation_passed": true,
+      "fraud_flags": []
+    },
+    {
+      "merchant_id": "76b2cf0e-9eb1-4ec6-86b0-2531ad024a6f",
+      "name": "Merchant-006",
+      "latency_seconds": 0.009,
+      "confidence": 0.95,
+      "extracted_transactions": 13,
+      "expected_transactions": 13,
+      "validation_passed": true,
+      "fraud_flags": []
+    },
+    {
+      "merchant_id": "61e4501e-8d21-4199-87bb-75bc9a653ac3",
+      "name": "Merchant-007",
+      "latency_seconds": 0.008,
+      "confidence": 0.6,
+      "extracted_transactions": 13,
+      "expected_transactions": 13,
+      "validation_passed": false,
+      "fraud_flags": [
+        "Running balance mismatch in bank_statement.csv: Mismatch at row 4: expected -7392.34, got -7892.34"
+      ]
+    },
+    {
+      "merchant_id": "769635ba-38e5-4138-89e2-c26c6032e6d7",
+      "name": "Merchant-008",
+      "latency_seconds": 0.009,
+      "confidence": 0.6,
+      "extracted_transactions": 9,
+      "expected_transactions": 9,
+      "validation_passed": false,
+      "fraud_flags": [
+        "Running balance mismatch in bank_statement.csv: Mismatch at row 4: expected 25319.47, got 24819.47"
+      ]
+    },
+    {
+      "merchant_id": "201849cb-7c2c-470c-a48c-bef37a85f474",
+      "name": "Merchant-009",
+      "latency_seconds": 0.009,
+      "confidence": 0.95,
+      "extracted_transactions": 15,
+      "expected_transactions": 15,
+      "validation_passed": true,
+      "fraud_flags": []
+    },
+    {
+      "merchant_id": "ce24cbce-560d-40d4-82a7-2f3e7b76cb23",
+      "name": "Merchant-010",
+      "latency_seconds": 0.008,
+      "confidence": 0.95,
+      "extracted_transactions": 11,
+      "expected_transactions": 11,
+      "validation_passed": true,
+      "fraud_flags": []
+    }
+  ]
+}

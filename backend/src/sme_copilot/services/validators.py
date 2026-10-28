@@ -1,7 +1,12 @@
 from datetime import datetime
 from typing import Any
 
-from sme_copilot.schemas.models import CheckResult, ValidationCheck, ValidationResult
+from sme_copilot.schemas.models import (
+    CheckResult,
+    ExtractedDocument,
+    ValidationCheck,
+    ValidationResult,
+)
 
 
 def running_balance_check(transactions: list[dict[str, Any]]) -> CheckResult:
@@ -89,3 +94,52 @@ def run_validation(
         passed=passed,
         errors=errors,
     )
+
+
+class ValidationService:
+    @staticmethod
+    def validate_extracted_document(doc: ExtractedDocument) -> ValidationResult:
+        tx_dicts = [
+            {"date": t.date, "amount": t.amount, "balance": t.balance} for t in doc.transactions
+        ]
+        stated_total = None
+        if "total" in doc.summary_fields and isinstance(doc.summary_fields["total"], (int, float)):
+            stated_total = float(doc.summary_fields["total"])
+
+        vr = run_validation(tx_dicts, stated_total=stated_total)
+        vr.application_id = doc.application_id
+        return vr
+
+    @classmethod
+    def validate_documents(
+        cls, documents: list[ExtractedDocument]
+    ) -> tuple[list[ValidationResult], float, list[str]]:
+        """Validate all extracted documents.
+
+        Returns: (validation_results, composite_confidence, fraud_flags)
+        """
+        results: list[ValidationResult] = []
+        fraud_flags: list[str] = []
+        confidence = 0.95
+
+        for doc in documents:
+            if doc.extraction_status == "failed":
+                fraud_flags.append(f"Document {doc.file_ref.filename} failed extraction")
+                confidence = min(confidence, 0.5)
+                continue
+
+            vr = cls.validate_extracted_document(doc)
+            results.append(vr)
+
+            if not vr.passed:
+                confidence = min(confidence, 0.6)
+                for err in vr.errors:
+                    fname = doc.file_ref.filename
+                    if "Mismatch" in err:
+                        fraud_flags.append(f"Running balance mismatch in {fname}: {err}")
+                    elif "Gap" in err:
+                        fraud_flags.append(f"Continuity anomaly in {fname}: {err}")
+                    else:
+                        fraud_flags.append(f"Discrepancy in {fname}: {err}")
+
+        return results, round(confidence, 2), fraud_flags

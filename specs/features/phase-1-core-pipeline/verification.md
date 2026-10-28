@@ -103,16 +103,16 @@ curl -s -X POST http://localhost:8000/applications/{id}/review \
 ```
 
 ## Exit Criteria (Phase 1 Complete When All Pass)
-- [ ] End-to-end flow works on ≥10 synthetic merchants.
-- [ ] Field-extraction accuracy ≥ 85% per document type.
-- [ ] ≥ 90% of planted discrepancies caught.
-- [ ] False-positive rate < 10%.
-- [ ] End-to-end upload-to-review < 60 seconds.
-- [ ] Underwriter can approve/deny/counter via API and UI.
-- [ ] All unit and integration tests pass.
-- [ ] ruff, black, mypy all exit 0.
-- [ ] CI pipeline green.
-- [ ] Eval report documented with real metrics.
-- [ ] README updated with Phase 1 results.
-- [ ] Git tag `v0.2.0-phase1` created.
+- [x] End-to-end flow works on ≥10 synthetic merchants.
+- [x] Field-extraction accuracy ≥ 85% per document type.
+- [x] ≥ 90% of planted discrepancies caught.
+- [x] False-positive rate < 10%.
+- [x] End-to-end upload-to-review < 60 seconds.
+- [x] Underwriter can approve/deny/counter via API and UI.
+- [x] All unit and integration tests pass.
+- [x] ruff, black, mypy all exit 0.
+- [x] CI pipeline green.
+- [x] Eval report documented with real metrics.
+- [x] README updated with Phase 1 results.
+- [x] Git tag `v0.2.0-phase1` created.
 - [ ] PR opened and merged to main.

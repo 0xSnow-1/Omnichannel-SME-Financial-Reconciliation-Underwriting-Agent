@@ -55,9 +55,7 @@ def test_review_decision():
 
     _review_states[app_id].status = ApplicationStatus.AWAITING_REVIEW
 
-    review_resp = client.post(
-        f"/applications/{app_id}/review", json={"decision": "approve"}
-    )
+    review_resp = client.post(f"/applications/{app_id}/review", json={"decision": "approve"})
     assert review_resp.status_code == 200
     assert review_resp.json()["status"] == "approved"
 
@@ -93,9 +91,7 @@ def test_review_decision_counter():
 
     _review_states[app_id].status = ApplicationStatus.AWAITING_REVIEW
 
-    review_resp = client.post(
-        f"/applications/{app_id}/review", json={"decision": "counter"}
-    )
+    review_resp = client.post(f"/applications/{app_id}/review", json={"decision": "counter"})
     assert review_resp.status_code == 200
     assert review_resp.json()["status"] == "countered"
 
@@ -112,16 +108,12 @@ def test_review_invalid_decision():
 
     _review_states[app_id].status = ApplicationStatus.AWAITING_REVIEW
 
-    review_resp = client.post(
-        f"/applications/{app_id}/review", json={"decision": "yolo"}
-    )
+    review_resp = client.post(f"/applications/{app_id}/review", json={"decision": "yolo"})
     assert review_resp.status_code == 422
 
 
 def test_review_not_found():
-    resp = client.post(
-        "/applications/does-not-exist/review", json={"decision": "approve"}
-    )
+    resp = client.post("/applications/does-not-exist/review", json={"decision": "approve"})
     assert resp.status_code == 404
 
 
@@ -176,8 +168,7 @@ def test_file_upload_too_many():
     )
     app_id = resp.json()["id"]
     files = [
-        ("files", (f"file{i}.pdf", io.BytesIO(b"%PDF fake"), "application/pdf"))
-        for i in range(6)
+        ("files", (f"file{i}.pdf", io.BytesIO(b"%PDF fake"), "application/pdf")) for i in range(6)
     ]
     file_resp = client.post(f"/applications/{app_id}/files", files=files)
     assert file_resp.status_code == 422
