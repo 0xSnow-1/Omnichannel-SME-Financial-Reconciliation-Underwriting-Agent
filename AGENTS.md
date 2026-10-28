@@ -149,8 +149,8 @@ curl -X POST http://localhost:8000/applications \
 |---|---|---|
 | Phase 0 — Scaffold | ✅ Done | Repo, schemas, KYC stub, audit chain, LangGraph skeleton, CI |
 | Phase 1 — MVP Core Pipeline | ✅ Done | Docling → LLM extraction → validation → human review |
-| Phase 2 — Evaluation & Benchmarking | ⚪ Next up | Anthropic EDD framework, capability/regression suites, metrics (`pass@k`, `pass^k`) |
-| Phase 3 — Reconciliation & Audit Export | ⚪ Not started | Cross-source reconciliation, credit memo, hash chain export |
+| Phase 2 — Evaluation & Benchmarking | ✅ Done | Anthropic EDD framework, capability/regression suites, metrics (`pass@k`, `pass^k`) |
+| Phase 3 — Reconciliation & Audit Export | ⚪ Next up | Cross-source reconciliation, credit memo, hash chain export |
 | Phase 4 — Hardening & Scale | ⚪ Not started | Real connectors, real KYC, public deployment |
 
 See `specs/features/` for per-phase requirements, plans, and verification scorecards.
