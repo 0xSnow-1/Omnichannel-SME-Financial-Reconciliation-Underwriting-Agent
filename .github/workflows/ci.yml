@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main, spec/*]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+      - name: Ruff
+        run: ruff check backend/
+      - name: Black
+        run: black --check backend/
+      - name: Mypy
+        run: PYTHONPATH=backend/src mypy backend/src
+      - name: Pytest
+        run: PYTHONPATH=backend/src python -m pytest backend/tests -q
