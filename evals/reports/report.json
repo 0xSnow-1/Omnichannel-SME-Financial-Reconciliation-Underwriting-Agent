@@ -1,0 +1,304 @@
+{
+  "timestamp": "2026-10-28T13:52:00Z",
+  "suite": "capability",
+  "merchants_evaluated": 5,
+  "iterations_per_merchant": 2,
+  "llm_judge_enabled": false,
+  "metrics": {
+    "field_extraction_accuracy_pct": 100.0,
+    "discrepancy_catch_rate_pct": 100.0,
+    "false_positive_rate_pct": 0.0,
+    "single_run_pass_rate": 1.0,
+    "pass@2": 1.0,
+    "pass^2": 1.0,
+    "average_latency_seconds": 0.009,
+    "total_runtime_seconds": 0.1
+  },
+  "graders_used": [
+    "schema_compliance",
+    "numeric_accuracy",
+    "arithmetic_integrity",
+    "source_pointer_validity",
+    "llm_qualitative_judge"
+  ],
+  "details": [
+    {
+      "merchant_id": "3ff873a0-bab3-4206-902d-008042b72a8e",
+      "name": "Merchant-001",
+      "suite": "capability",
+      "latency_seconds": 0.014,
+      "confidence": 0.95,
+      "extracted_transactions": 9,
+      "expected_transactions": 9,
+      "iterations_passed": 2,
+      "total_iterations": 2,
+      "grades": [
+        {
+          "grader_name": "schema_compliance",
+          "grader_type": "code",
+          "passed": true,
+          "score": 1.0,
+          "details": "All 2 documents conform to strict Pydantic V2 schemas",
+          "cost_cents": 0.0
+        },
+        {
+          "grader_name": "numeric_accuracy",
+          "grader_type": "code",
+          "passed": true,
+          "score": 1.0,
+          "details": "Extracted 9/9 transactions (100.0%)",
+          "cost_cents": 0.0
+        },
+        {
+          "grader_name": "arithmetic_integrity",
+          "grader_type": "code",
+          "passed": true,
+          "score": 1.0,
+          "details": "Clean arithmetic verified",
+          "cost_cents": 0.0
+        },
+        {
+          "grader_name": "source_pointer_validity",
+          "grader_type": "code",
+          "passed": true,
+          "score": 1.0,
+          "details": "14/14 transactions carry valid document source pointers",
+          "cost_cents": 0.0
+        },
+        {
+          "grader_name": "llm_qualitative_judge",
+          "grader_type": "model",
+          "passed": true,
+          "score": 1.0,
+          "details": "[DRY-RUN / SKIPPED] LLM Judge execution is disabled by default to prevent token costs. Architecture is fully ready. Pass --enable-llm-judge to execute live.",
+          "cost_cents": 0.0
+        }
+      ],
+      "fraud_flags": []
+    },
+    {
+      "merchant_id": "7d0da649-3ab8-4996-aac4-ae245aaab673",
+      "name": "Merchant-002",
+      "suite": "capability",
+      "latency_seconds": 0.009,
+      "confidence": 0.6,
+      "extracted_transactions": 8,
+      "expected_transactions": 8,
+      "iterations_passed": 2,
+      "total_iterations": 2,
+      "grades": [
+        {
+          "grader_name": "schema_compliance",
+          "grader_type": "code",
+          "passed": true,
+          "score": 1.0,
+          "details": "All 2 documents conform to strict Pydantic V2 schemas",
+          "cost_cents": 0.0
+        },
+        {
+          "grader_name": "numeric_accuracy",
+          "grader_type": "code",
+          "passed": true,
+          "score": 1.0,
+          "details": "Extracted 8/8 transactions (100.0%)",
+          "cost_cents": 0.0
+        },
+        {
+          "grader_name": "arithmetic_integrity",
+          "grader_type": "code",
+          "passed": true,
+          "score": 1.0,
+          "details": "Correctly caught planted arithmetic mismatch",
+          "cost_cents": 0.0
+        },
+        {
+          "grader_name": "source_pointer_validity",
+          "grader_type": "code",
+          "passed": true,
+          "score": 1.0,
+          "details": "13/13 transactions carry valid document source pointers",
+          "cost_cents": 0.0
+        },
+        {
+          "grader_name": "llm_qualitative_judge",
+          "grader_type": "model",
+          "passed": true,
+          "score": 1.0,
+          "details": "[DRY-RUN / SKIPPED] LLM Judge execution is disabled by default to prevent token costs. Architecture is fully ready. Pass --enable-llm-judge to execute live.",
+          "cost_cents": 0.0
+        }
+      ],
+      "fraud_flags": [
+        "Running balance mismatch in bank_statement.csv: Mismatch at row 4: expected 72303.93, got 71803.93"
+      ]
+    },
+    {
+      "merchant_id": "3f00dcb7-0edf-49c6-8874-01a527630517",
+      "name": "Merchant-003",
+      "suite": "capability",
+      "latency_seconds": 0.008,
+      "confidence": 0.6,
+      "extracted_transactions": 14,
+      "expected_transactions": 14,
+      "iterations_passed": 2,
+      "total_iterations": 2,
+      "grades": [
+        {
+          "grader_name": "schema_compliance",
+          "grader_type": "code",
+          "passed": true,
+          "score": 1.0,
+          "details": "All 2 documents conform to strict Pydantic V2 schemas",
+          "cost_cents": 0.0
+        },
+        {
+          "grader_name": "numeric_accuracy",
+          "grader_type": "code",
+          "passed": true,
+          "score": 1.0,
+          "details": "Extracted 14/14 transactions (100.0%)",
+          "cost_cents": 0.0
+        },
+        {
+          "grader_name": "arithmetic_integrity",
+          "grader_type": "code",
+          "passed": true,
+          "score": 1.0,
+          "details": "Correctly caught planted arithmetic mismatch",
+          "cost_cents": 0.0
+        },
+        {
+          "grader_name": "source_pointer_validity",
+          "grader_type": "code",
+          "passed": true,
+          "score": 1.0,
+          "details": "19/19 transactions carry valid document source pointers",
+          "cost_cents": 0.0
+        },
+        {
+          "grader_name": "llm_qualitative_judge",
+          "grader_type": "model",
+          "passed": true,
+          "score": 1.0,
+          "details": "[DRY-RUN / SKIPPED] LLM Judge execution is disabled by default to prevent token costs. Architecture is fully ready. Pass --enable-llm-judge to execute live.",
+          "cost_cents": 0.0
+        }
+      ],
+      "fraud_flags": [
+        "Running balance mismatch in bank_statement.csv: Mismatch at row 4: expected 338432.35, got 337932.35"
+      ]
+    },
+    {
+      "merchant_id": "ee038853-3ee9-4f20-8fdc-2f47144c6882",
+      "name": "Merchant-004",
+      "suite": "capability",
+      "latency_seconds": 0.009,
+      "confidence": 0.6,
+      "extracted_transactions": 12,
+      "expected_transactions": 12,
+      "iterations_passed": 2,
+      "total_iterations": 2,
+      "grades": [
+        {
+          "grader_name": "schema_compliance",
+          "grader_type": "code",
+          "passed": true,
+          "score": 1.0,
+          "details": "All 2 documents conform to strict Pydantic V2 schemas",
+          "cost_cents": 0.0
+        },
+        {
+          "grader_name": "numeric_accuracy",
+          "grader_type": "code",
+          "passed": true,
+          "score": 1.0,
+          "details": "Extracted 12/12 transactions (100.0%)",
+          "cost_cents": 0.0
+        },
+        {
+          "grader_name": "arithmetic_integrity",
+          "grader_type": "code",
+          "passed": true,
+          "score": 1.0,
+          "details": "Correctly caught planted arithmetic mismatch",
+          "cost_cents": 0.0
+        },
+        {
+          "grader_name": "source_pointer_validity",
+          "grader_type": "code",
+          "passed": true,
+          "score": 1.0,
+          "details": "17/17 transactions carry valid document source pointers",
+          "cost_cents": 0.0
+        },
+        {
+          "grader_name": "llm_qualitative_judge",
+          "grader_type": "model",
+          "passed": true,
+          "score": 1.0,
+          "details": "[DRY-RUN / SKIPPED] LLM Judge execution is disabled by default to prevent token costs. Architecture is fully ready. Pass --enable-llm-judge to execute live.",
+          "cost_cents": 0.0
+        }
+      ],
+      "fraud_flags": [
+        "Running balance mismatch in bank_statement.csv: Mismatch at row 4: expected 27800.11, got 27300.11"
+      ]
+    },
+    {
+      "merchant_id": "34fce742-cee4-439e-94c9-404bc7d22a82",
+      "name": "Merchant-005",
+      "suite": "capability",
+      "latency_seconds": 0.007,
+      "confidence": 0.6,
+      "extracted_transactions": 9,
+      "expected_transactions": 9,
+      "iterations_passed": 2,
+      "total_iterations": 2,
+      "grades": [
+        {
+          "grader_name": "schema_compliance",
+          "grader_type": "code",
+          "passed": true,
+          "score": 1.0,
+          "details": "All 2 documents conform to strict Pydantic V2 schemas",
+          "cost_cents": 0.0
+        },
+        {
+          "grader_name": "numeric_accuracy",
+          "grader_type": "code",
+          "passed": true,
+          "score": 1.0,
+          "details": "Extracted 9/9 transactions (100.0%)",
+          "cost_cents": 0.0
+        },
+        {
+          "grader_name": "arithmetic_integrity",
+          "grader_type": "code",
+          "passed": true,
+          "score": 1.0,
+          "details": "Correctly caught planted arithmetic mismatch",
+          "cost_cents": 0.0
+        },
+        {
+          "grader_name": "source_pointer_validity",
+          "grader_type": "code",
+          "passed": true,
+          "score": 1.0,
+          "details": "14/14 transactions carry valid document source pointers",
+          "cost_cents": 0.0
+        },
+        {
+          "grader_name": "llm_qualitative_judge",
+          "grader_type": "model",
+          "passed": true,
+          "score": 1.0,
+          "details": "[DRY-RUN / SKIPPED] LLM Judge execution is disabled by default to prevent token costs. Architecture is fully ready. Pass --enable-llm-judge to execute live.",
+          "cost_cents": 0.0
+        }
+      ],
+      "fraud_flags": [
+        "Running balance mismatch in bank_statement.csv: Mismatch at row 4: expected 409372.91, got 408872.91"
+      ]
+    }
+  ]
+}

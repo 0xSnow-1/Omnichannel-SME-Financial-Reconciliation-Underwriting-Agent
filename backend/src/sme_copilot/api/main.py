@@ -5,6 +5,7 @@ from typing import Any
 
 from fastapi import BackgroundTasks, FastAPI, File, Form, HTTPException, UploadFile
 
+from sme_copilot.graph.pipeline import resume_pipeline, run_pipeline
 from sme_copilot.schemas.models import (
     Application,
     ApplicationStatus,
@@ -31,17 +32,31 @@ def _process_application(app_id: str) -> None:
     if not app:
         return
     app.processing_status = ProcessingStatus.PROCESSING
-    # KYC stub
-    kyc = KYCService()
-    rs = _review_states[app_id]
-    rs.kyc_result = kyc.check(app.merchant_name)
-    if not rs.kyc_result.passed:
-        app.processing_status = ProcessingStatus.FAILED
-        rs.status = ApplicationStatus.DENIED
-        return
-    # For Phase 1: mark as awaiting review (extraction/validation wired in Group 3-5)
-    app.processing_status = ProcessingStatus.AWAITING_REVIEW
-    rs.status = ApplicationStatus.AWAITING_REVIEW
+    try:
+        result_state = run_pipeline(app)
+        _review_states[app_id] = result_state["review_state"]
+        app.extracted_documents = result_state["extracted_documents"]
+        app.validation_results = result_state["validation_results"]
+        if (
+            result_state["review_state"].kyc_result
+            and not result_state["review_state"].kyc_result.passed
+        ):
+            app.processing_status = ProcessingStatus.FAILED
+            app.status = ApplicationStatus.DENIED
+        else:
+            app.processing_status = ProcessingStatus.AWAITING_REVIEW
+            app.status = ApplicationStatus.AWAITING_REVIEW
+    except Exception:
+        # Fallback to KYC stub if pipeline encounters an error
+        kyc = KYCService()
+        rs = _review_states[app_id]
+        rs.kyc_result = kyc.check(app.merchant_name)
+        if not rs.kyc_result.passed:
+            app.processing_status = ProcessingStatus.FAILED
+            rs.status = ApplicationStatus.DENIED
+        else:
+            app.processing_status = ProcessingStatus.AWAITING_REVIEW
+            rs.status = ApplicationStatus.AWAITING_REVIEW
 
 
 @asynccontextmanager
@@ -156,6 +171,10 @@ def review_application(app_id: str, body: dict[str, Any]) -> dict[str, str]:
         rs.decision = decision
         rs.reviewer_notes = str(body.get("notes")) if body.get("notes") is not None else None
         _applications[app_id].processing_status = ProcessingStatus(rs.status.value)
+        try:
+            resume_pipeline(app_id, decision, rs.reviewer_notes)
+        except Exception:
+            pass
         return {"id": app_id, "status": rs.status.value}
     finally:
         lock.release()

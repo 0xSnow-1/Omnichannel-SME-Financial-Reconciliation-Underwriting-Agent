@@ -1,4 +1,3 @@
-
 from sme_copilot.services.validators import (
     date_continuity_check,
     line_item_sum_check,
@@ -160,3 +159,55 @@ def test_run_validation_empty_application_id():
     # run_validation always sets application_id to "" — acceptable for pure function usage
     result = run_validation([])
     assert result.application_id == ""
+
+
+def test_validation_service_clean_doc():
+    from sme_copilot.schemas.models import DocumentType, ExtractedDocument, FileRef, TransactionLine
+    from sme_copilot.services.validators import ValidationService
+
+    doc = ExtractedDocument(
+        application_id="app-1",
+        file_ref=FileRef(
+            filename="clean.pdf",
+            content_type="application/pdf",
+            size_bytes=100,
+            storage_path="/tmp/clean.pdf",
+        ),
+        document_type=DocumentType.BANK_STATEMENT,
+        transactions=[
+            TransactionLine(date="2024-01-01", amount=1000.0, balance=1000.0),
+            TransactionLine(date="2024-01-05", amount=-200.0, balance=800.0),
+        ],
+    )
+
+    results, conf, flags = ValidationService.validate_documents([doc])
+    assert len(results) == 1
+    assert results[0].passed is True
+    assert conf >= 0.8
+    assert len(flags) == 0
+
+
+def test_validation_service_mismatched_doc():
+    from sme_copilot.schemas.models import DocumentType, ExtractedDocument, FileRef, TransactionLine
+    from sme_copilot.services.validators import ValidationService
+
+    doc = ExtractedDocument(
+        application_id="app-1",
+        file_ref=FileRef(
+            filename="mismatch.pdf",
+            content_type="application/pdf",
+            size_bytes=100,
+            storage_path="/tmp/mismatch.pdf",
+        ),
+        document_type=DocumentType.BANK_STATEMENT,
+        transactions=[
+            TransactionLine(date="2024-01-01", amount=1000.0, balance=1000.0),
+            TransactionLine(date="2024-01-05", amount=500.0, balance=2000.0),  # wrong
+        ],
+    )
+
+    results, conf, flags = ValidationService.validate_documents([doc])
+    assert len(results) == 1
+    assert results[0].passed is False
+    assert conf < 0.7
+    assert len(flags) >= 1
