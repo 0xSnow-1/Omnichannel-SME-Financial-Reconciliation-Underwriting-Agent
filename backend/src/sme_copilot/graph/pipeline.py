@@ -10,12 +10,14 @@ from sme_copilot.schemas.models import (
     ApplicationStatus,
     ExtractedDocument,
     ProcessingStatus,
+    ReconciliationResult,
     ReviewState,
     ValidationResult,
 )
 from sme_copilot.services.docling_parser import ParsedDocument, parse_document
 from sme_copilot.services.extraction import ExtractionService
 from sme_copilot.services.kyc import KYCService
+from sme_copilot.services.reconciliation import ReconciliationService
 from sme_copilot.services.validators import ValidationService
 
 logger = logging.getLogger(__name__)
@@ -29,6 +31,8 @@ class GraphState(TypedDict):
     validation_results: list[ValidationResult]
     confidence: float
     fraud_flags: list[str]
+    reconciliation_result: ReconciliationResult | None
+    should_end: bool
 
 
 def kyc_check_node(state: GraphState) -> GraphState:
@@ -104,7 +108,6 @@ def validate_node(state: GraphState) -> GraphState:
     state["validation_results"] = results
     state["confidence"] = confidence
     state["fraud_flags"] = fraud_flags
-
     app.validation_results = results
     rs.confidence = confidence
     rs.fraud_flags = fraud_flags
@@ -117,6 +120,39 @@ def validate_node(state: GraphState) -> GraphState:
         rs.status = ApplicationStatus.AWAITING_REVIEW
         app.processing_status = ProcessingStatus.AWAITING_REVIEW
 
+    return state
+
+
+def reconcile_node(state: GraphState) -> GraphState:
+    """Node that performs reconciliation between extracted financial data."""
+    app = state["application"]
+    rs = state["review_state"]
+    
+    # Check if validation passed
+    validation_failed = False
+    for vr in state["validation_results"]:
+        if not vr.passed:
+            validation_failed = True
+            break
+    
+    # Run reconciliation service
+    reconciliation_service = ReconciliationService()
+    reconciliation_result = reconciliation_service.run(app)
+    
+    # Store reconciliation result in state
+    rs.reconciliation_result = reconciliation_result
+    
+    # Update application status based on reconciliation
+    if validation_failed or reconciliation_result.status == "failed" or reconciliation_result.flags:
+        rs.status = ApplicationStatus.DENIED
+        app.status = ApplicationStatus.DENIED
+        app.processing_status = ProcessingStatus.FAILED
+        app.reconciliation_status = "failed"
+        # End the graph - don't proceed to human_review
+        state["should_end"] = True
+    else:
+        app.reconciliation_status = "success"
+    
     return state
 
 
@@ -152,6 +188,7 @@ def build_graph(checkpointer: Any = None) -> Any:
     graph.add_node("parse", parse_node)
     graph.add_node("extract", extract_node)
     graph.add_node("validate", validate_node)
+    graph.add_node("reconcile", reconcile_node)
     graph.add_node("human_review", human_review_node)
 
     graph.set_entry_point("kyc_check")
@@ -162,7 +199,19 @@ def build_graph(checkpointer: Any = None) -> Any:
     )
     graph.add_edge("parse", "extract")
     graph.add_edge("extract", "validate")
-    graph.add_edge("validate", "human_review")
+    graph.add_edge("validate", "reconcile")
+    
+    # Conditional edge from reconcile to human_review or END
+    def reconcile_condition(state: GraphState) -> str:
+        if state.get("should_end", False):
+            return "END"
+        return "human_review"
+    
+    graph.add_conditional_edges(
+        "reconcile",
+        reconcile_condition,
+        {"human_review": "human_review", "END": END},
+    )
     graph.add_edge("human_review", END)
 
     if checkpointer is None:
@@ -210,6 +259,8 @@ def run_pipeline(application: Application) -> GraphState:
         "validation_results": [],
         "confidence": 1.0,
         "fraud_flags": [],
+        "reconciliation_result": None,
+        "should_end": False,
     }
 
     config = {"configurable": {"thread_id": application.id}}

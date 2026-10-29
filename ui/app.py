@@ -171,6 +171,30 @@ if validation_results:
                 st.error(f"❌ {name}: {details}")
 
 # ---------------------------------------------------------------------------
+# Reconciliation findings
+# ---------------------------------------------------------------------------
+reconciliation_summary = status_data.get("reconciliation_result_summary")
+if reconciliation_summary:
+    st.subheader("Reconciliation Findings")
+    status = reconciliation_summary.get("status")
+    matched_count = reconciliation_summary.get("matched_pairs_count", 0)
+    flags_count = reconciliation_summary.get("flags_count", 0)
+    total_amount = reconciliation_summary.get("total_amount")
+
+    if status == "failed" or flags_count > 0:
+        st.error(f"❌ Reconciliation failed - {flags_count} flags")
+        if flags_count > 0:
+            st.write("Flags:")
+            # Note: We don't have access to full flag details from summary, 
+            # would need to call /reconciliation endpoint for details
+    elif status == "success":
+        st.success(f"✅ Reconciliation successful - {matched_count} matched pairs")
+        if total_amount:
+            st.write(f"Total matched amount: {total_amount:.2f}")
+    else:
+        st.info("⏳ Reconciliation pending...")
+
+# ---------------------------------------------------------------------------
 # Extracted documents
 # ---------------------------------------------------------------------------
 documents = evid_data.get("documents", [])

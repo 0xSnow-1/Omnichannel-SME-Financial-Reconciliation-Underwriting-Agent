@@ -129,6 +129,12 @@ def get_status(app_id: str) -> dict[str, Any]:
         "confidence": rs.confidence,
         "validation_results": [vr.model_dump() for vr in app.validation_results],
         "extracted_documents": [ed.model_dump() for ed in app.extracted_documents],
+        "reconciliation_result_summary": {
+            "status": rs.reconciliation_result.status if rs.reconciliation_result else None,
+            "matched_pairs_count": len(rs.reconciliation_result.matched_pairs) if rs.reconciliation_result else 0,
+            "flags_count": len(rs.reconciliation_result.flags) if rs.reconciliation_result else 0,
+            "total_amount": rs.reconciliation_result.total_amount if rs.reconciliation_result else None,
+        } if rs.reconciliation_result else None,
     }
 
 
@@ -146,6 +152,16 @@ def get_evidence(app_id: str) -> dict[str, Any]:
         fraud_flags=rs.fraud_flags,
     )
     return bundle.model_dump()
+
+
+@app.get("/applications/{app_id}/reconciliation")
+def get_reconciliation(app_id: str) -> dict[str, Any]:
+    if app_id not in _review_states:
+        raise HTTPException(status_code=404, detail="Application not found")
+    rs = _review_states[app_id]
+    if not rs.reconciliation_result:
+        raise HTTPException(status_code=404, detail="Reconciliation not yet completed")
+    return rs.reconciliation_result.model_dump()
 
 
 @app.post("/applications/{app_id}/review")
