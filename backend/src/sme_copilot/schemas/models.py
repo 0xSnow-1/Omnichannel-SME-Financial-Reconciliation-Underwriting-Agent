@@ -96,6 +96,7 @@ class Application(BaseModel):
     processing_status: ProcessingStatus = ProcessingStatus.PENDING
     validation_results: list["ValidationResult"] = Field(default_factory=list)
     extracted_documents: list["ExtractedDocument"] = Field(default_factory=list)
+    reconciliation_status: str = "pending"
 
 
 class ExtractionResult(BaseModel):
@@ -125,6 +126,28 @@ class KYCResult(BaseModel):
     checked_at: datetime = Field(default_factory=datetime.utcnow)
 
 
+class MatchedPair(BaseModel):
+    order_id: str
+    payout_ref: str
+    amount: float
+    date: str
+    source_pointer: SourcePointer | None = None
+
+
+class ReconciliationFlag(BaseModel):
+    flag_type: str
+    severity: str
+    description: str
+
+
+class ReconciliationResult(BaseModel):
+    matched_pairs: list[MatchedPair]
+    flags: list[ReconciliationFlag]
+    status: str
+    total_amount: float | None = None
+    unmatched_amount: float | None = None
+
+
 class ReviewState(BaseModel):
     application_id: str
     status: ApplicationStatus = ApplicationStatus.PENDING
@@ -133,6 +156,7 @@ class ReviewState(BaseModel):
     fraud_flags: list[str] = Field(default_factory=list)
     decision: str | None = None
     reviewer_notes: str | None = None
+    reconciliation_result: "ReconciliationResult | None" = None
 
 
 class Merchant(BaseModel):
